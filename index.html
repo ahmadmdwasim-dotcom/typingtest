@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Typing Test - Improve Your Typing Speed & Accuracy</title>
+    <meta name="description" content="Free advanced typing test to measure and improve your typing speed (WPM) and accuracy. Take customizable typing tests with detailed analytics and progress tracking.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Screen 1: User Details -->
+        <div class="screen active" id="screen1">
+            <h1>Acubens Advanced Typing Test</h1>
+            <p class="instruction-text">Enter your details to begin the typing test. Your information will only be used to send your test report.</p>
+            
+            <form id="userDetailsForm">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+                    <div class="error" id="nameError">Name must be at least 2 characters long</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
+                    <div class="error" id="phoneError">Please enter a valid phone number (min 7 digits)</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email address" required>
+                    <div class="error" id="emailError">Please enter a valid email address</div>
+                </div>
+                
+                <div class="form-buttons">
+                    <button type="submit" class="btn-primary" id="startButton">Start Test</button>
+                    <button type="button" class="btn-secondary" id="instructionsButton">📚 Instructions & Guide</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Screen 2: Test Setup -->
+        <div class="screen" id="screen2">
+            <h2>Test Configuration</h2>
+            <p class="instruction-text">Configure your typing test settings below</p>
+            
+            <div class="form-group">
+                <label>Test Duration</label>
+                <div class="duration-buttons">
+                    <div class="duration-button" data-duration="5">5 minutes</div>
+                    <div class="duration-button" data-duration="15">15 minutes</div>
+                    <div class="duration-button" data-duration="30">30 minutes</div>
+                    <div class="duration-button" data-duration="custom">Custom</div>
+                </div>
+                
+                <div class="custom-input" id="customTimeInput">
+                    <input type="number" id="customTime" placeholder="Enter minutes (1-180)" min="1" max="180">
+                    <div class="error" id="customTimeError">Please enter a valid time between 1 and 180 minutes</div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="lessonSelect">Select Lesson</label>
+                <select id="lessonSelect" class="lesson-options">
+                    <option value="">-- Choose a lesson --</option>
+                </select>
+                
+                <div class="file-upload" id="fileUpload">
+                    <input type="file" id="lessonFile" accept=".txt">
+                    <p>📁 Click here to upload your own text file (.txt, max 1MB)</p>
+                </div>
+                
+                <div id="uploadedFileInfo" class="uploaded-file" style="display: none;"></div>
+            </div>
+            
+            <div class="controls">
+                <button type="button" class="btn-secondary" id="backToUserDetails">← Back</button>
+                <button type="button" class="btn-primary" id="beginTest" disabled>Begin Test →</button>
+            </div>
+        </div>
+
+        <!-- Screen 3: Typing Test -->
+        <div class="screen" id="screen3">
+            <h2>Typing Test</h2>
+            <p class="instruction-text">Start typing the text below. Focus on accuracy and speed!</p>
+            <p class="focus-hint">Click anywhere to focus and start typing...</p>
+            
+            <div class="progress-bar">
+                <div class="progress" id="testProgress"></div>
+            </div>
+            
+            <div class="stats-container">
+                <div class="stat-box">
+                    <div class="stat-value" id="wpmValue">0</div>
+                    <div class="stat-label">Words Per Minute</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="accuracyValue">100%</div>
+                    <div class="stat-label">Accuracy</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="timerValue">05:00</div>
+                    <div class="stat-label">Time Remaining</div>
+                </div>
+            </div>
+            
+            <div class="passage-container" id="passageContainer">
+                <div class="passage-text" id="passageText"></div>
+            </div>
+            
+            <textarea class="typing-input" id="typingInput" placeholder="Start typing..."></textarea>
+            
+            <div class="controls">
+                <button type="button" class="btn-secondary" id="pauseResume">⏸️ Pause</button>
+                <button type="button" class="btn-danger" id="endTest">⏹️ End Test</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Modal -->
+    <div class="modal" id="resultsModal">
+        <div class="modal-content">
+            <h2>Test Results</h2>
+            <p class="instruction-text">Great job! Here's how you performed:</p>
+            
+            <div class="results-grid">
+                <div class="result-item">
+                    <div class="result-value" id="finalWPM">0</div>
+                    <div class="result-label">WPM</div>
+                </div>
+                <div class="result-item">
+                    <div class="result-value" id="finalAccuracy">100%</div>
+                    <div class="result-label">Accuracy</div>
+                </div>
+                <div class="result-item">
+                    <div class="result-value" id="totalChars">0</div>
+                    <div class="result-label">Characters</div>
+                </div>
+                <div class="result-item">
+                    <div class="result-value" id="totalErrors">0</div>
+                    <div class="result-label">Errors</div>
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <button type="button" class="btn-secondary" id="homeButton">🏠 Home</button>
+                <button type="button" class="btn-secondary" id="newTest">🔄 New Test</button>
+                <button type="button" class="btn-primary" id="downloadReport">📥 Download Report</button>
+                <button type="button" class="btn-primary" id="sendEmail">📧 Send Email</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Instructions Modal -->
+    <div class="modal" id="instructionsModal">
+        <div class="modal-content instructions-content">
+            <h2>📚 Typing Test Instructions & Complete Guide</h2>
+            
+            <div class="instructions-container">
+                <div class="instructions-scrollable">
+                    <section class="seo-content">
+                        <h3>Master Your Typing Skills: The Ultimate Guide to Improving Speed and Accuracy</h3>
+                        
+                        <div class="content-section">
+                            <h4>🚀 How to Use This Advanced Typing Test</h4>
+                            <p>Welcome to the Acubens Advanced Typing Test – your comprehensive tool for measuring and improving your typing proficiency.</p>
+                            
+                            <h5>Step-by-Step Guide:</h5>
+                            <ol>
+                                <li><strong>User Registration</strong>: Start by entering your basic details.</li>
+                                <li><strong>Test Configuration</strong>: Choose your preferred test duration and select from lessons or upload your own text.</li>
+                                <li><strong>Typing Interface</strong>: The clean interface displays your text with real-time feedback.</li>
+                                <li><strong>Real-time Analytics</strong>: Monitor your WPM, accuracy percentage, and time remaining.</li>
+                                <li><strong>Results Analysis</strong>: Receive detailed performance metrics.</li>
+                            </ol>
+                        </div>
+
+                        <div class="content-section">
+                            <h4>💡 Pro Tips for Maximum Improvement</h4>
+                            <ul>
+                                <li><strong>Proper Posture</strong>: Sit straight with feet flat on the floor.</li>
+                                <li><strong>Home Row Position</strong>: Keep fingers on ASDF and JKL; keys.</li>
+                                <li><strong>Touch Typing</strong>: Learn to type without looking at the keyboard.</li>
+                                <li><strong>Rhythm and Consistency</strong>: Maintain a steady rhythm.</li>
+                                <li><strong>Error Management</strong>: Don't fix every mistake immediately.</li>
+                            </ul>
+                        </div>
+
+                        <div class="content-section">
+                            <h4>🎯 Benefits of Regular Typing Practice</h4>
+                            
+                            <h5>Professional Advantages</h5>
+                            <ul>
+                                <li>Complete documentation 40-60% faster</li>
+                                <li>Reduce workplace fatigue</li>
+                                <li>Improve communication response times</li>
+                                <li>Enhance multitasking capabilities</li>
+                            </ul>
+
+                            <h5>Academic Excellence</h5>
+                            <ul>
+                                <li>Complete assignments more efficiently</li>
+                                <li>Take comprehensive digital notes</li>
+                                <li>Improve performance in timed examinations</li>
+                            </ul>
+
+                            <h5>Cognitive Benefits</h5>
+                            <ul>
+                                <li>Strengthens neural pathways</li>
+                                <li>Improves hand-eye coordination</li>
+                                <li>Enhances muscle memory</li>
+                            </ul>
+                        </div>
+
+                        <div class="content-section">
+                            <h4>📊 Understanding Your Typing Metrics</h4>
+                            
+                            <h5>Words Per Minute (WPM)</h5>
+                            <ul>
+                                <li><strong>Beginner</strong>: 20-30 WPM</li>
+                                <li><strong>Intermediate</strong>: 30-45 WPM</li>
+                                <li><strong>Advanced</strong>: 45-60 WPM</li>
+                                <li><strong>Professional</strong>: 60-80 WPM</li>
+                                <li><strong>Expert</strong>: 80+ WPM</li>
+                            </ul>
+                        </div>
+
+                        <div class="content-section">
+                            <h4>🌐 Additional Resources</h4>
+                            <div class="resource-links">
+                                <h5>Recommended Learning Platforms</h5>
+                                <ul>
+                                    <li><a href="https://www.typingclub.com" target="_blank">TypingClub</a> - Comprehensive free typing lessons</li>
+                                    <li><a href="https://www.keybr.com" target="_blank">Keybr</a> - AI-powered typing practice</li>
+                                    <li><a href="https://www.ratatype.com" target="_blank">Ratatype</a> - Typing tests and certificates</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="content-section final-thoughts">
+                            <h4>🌟 Final Thoughts</h4>
+                            <p>Typing proficiency is an essential component of digital literacy. Whether you're aiming for professional advancement or personal development, mastering typing delivers tangible benefits.</p>
+                            <p><strong>Ready to begin?</strong> Close this guide and click "Start Test" to take your first typing assessment.</p>
+                        </div>
+                    </section>
+                </div>
+            </div>
+            
+            <div class="instructions-actions">
+                <button type="button" class="btn-primary" id="closeInstructions">Start Typing Test</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
